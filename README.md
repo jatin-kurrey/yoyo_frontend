@@ -1,0 +1,130 @@
+# YOYO FUN N FOODS Booking Platform
+
+Production-ready React/Vite frontend plus Go/Gin backend for tickets, bookings, Razorpay payment verification, contact messages, and a protected admin panel.
+
+## Stack
+
+- Frontend: React, Vite, Tailwind, Recharts, Razorpay Checkout
+- Backend: Go, Gin, GORM, PostgreSQL, JWT, bcrypt, go-playground/validator
+- Payments: Razorpay Orders API, checkout signature verification, webhook signature verification
+- Architecture: Route -> Controller -> Service -> Repository -> Database
+
+## Local Setup
+
+1. Create PostgreSQL database:
+
+```bash
+createdb yoyo_booking
+```
+
+2. Configure backend:
+
+```bash
+cp server/.env.example server/.env
+```
+
+3. Configure frontend:
+
+```bash
+cp .env.example .env
+```
+
+4. Install and run frontend:
+
+```bash
+npm install
+npm run dev
+```
+
+5. Run backend:
+
+```bash
+cd server
+go mod tidy
+go run cmd/api/main.go seed
+go run cmd/api/main.go
+```
+
+Frontend runs on `http://localhost:5173`. Backend API runs on `http://localhost:8080/api`.
+
+## Admin Login
+
+The seed command creates the first super admin from:
+
+- `ADMIN_NAME`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+
+Admin routes start at `/admin/login`.
+
+## Razorpay
+
+Set backend secrets only in `server/.env`:
+
+- `RAZORPAY_KEY_ID`
+- `RAZORPAY_KEY_SECRET`
+- `RAZORPAY_WEBHOOK_SECRET`
+
+Set frontend public key only in `.env`:
+
+- `VITE_RAZORPAY_KEY_ID`
+
+The frontend creates no trusted amount. It asks the backend to create an order, opens Razorpay Checkout with the returned order, then asks the backend to verify the payment signature.
+
+## Production Deploy
+
+Frontend:
+
+```bash
+npm ci
+npm run build
+```
+
+Serve `dist/` using Nginx or a static host.
+
+Backend on VPS:
+
+```bash
+cd server
+go build -o yoyo-api ./cmd/api
+APP_ENV=production ./yoyo-api
+```
+
+Example Nginx reverse proxy:
+
+```nginx
+server {
+    server_name your-domain.com;
+
+    root /var/www/yoyo/dist;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:8080/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Use managed PostgreSQL or a hardened local PostgreSQL instance, set `APP_ENV=production`, disable `AUTO_MIGRATE`, run SQL migrations, and use strong secrets.
+Set `TRUSTED_PROXIES=127.0.0.1` when the Go API runs behind local Nginx on the same VPS.
+
+## Verification
+
+Commands run successfully:
+
+```bash
+npm install
+npm run build
+npm run lint
+cd server && go test ./...
+```
+
+`go run cmd/api/main.go` requires a reachable PostgreSQL database and valid backend environment.
