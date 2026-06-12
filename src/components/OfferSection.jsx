@@ -15,7 +15,7 @@ export default function OfferSection() {
               <span className="animate-pulse">🔥</span> Limited Time Offer
             </div>
             
-            <h2 className="text-4xl md:text-6xl font-black text-white leading-tight">
+            <h2 className="text-[2rem] md:text-6xl font-black text-white leading-tight">
               Enjoy More, <br />
               <span className="text-blue-100">Pay Much Less.</span>
             </h2>

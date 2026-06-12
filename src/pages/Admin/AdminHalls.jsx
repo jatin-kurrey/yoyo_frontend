@@ -11,6 +11,7 @@ const AdminHalls = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPackage, setCurrentPackage] = useState(null);
+    const [selectedEnquiry, setSelectedEnquiry] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -55,6 +56,7 @@ const AdminHalls = () => {
         }
     };
 
+
     const handleOpenModal = (pkg = null) => {
         if (pkg) {
             setCurrentPackage(pkg);
@@ -97,10 +99,21 @@ const AdminHalls = () => {
 
     const handleStatusUpdate = async (id, status) => {
         try {
-            await hallService.updateEnquiryStatus(id, { status });
+            await hallService.updateEnquiry(id, { status });
             loadEnquiries();
         } catch (err) {
             alert("Status update failed");
+        }
+    };
+
+    const handleDeletePackage = async (id) => {
+        if (window.confirm("Are you sure you want to delete this package?")) {
+            try {
+                await hallService.deletePackage(id);
+                loadPackages();
+            } catch (err) {
+                alert(err.message || "Delete failed");
+            }
         }
     };
 
@@ -178,7 +191,7 @@ const AdminHalls = () => {
                                                 <button onClick={() => handleOpenModal(pkg)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
                                                     <Edit2 size={18} />
                                                 </button>
-                                                <button className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                                                <button onClick={() => handleDeletePackage(pkg.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -236,7 +249,7 @@ const AdminHalls = () => {
                                         </select>
                                     </td>
                                     <td className="px-8 py-6 text-right">
-                                        <button className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
+                                        <button onClick={() => setSelectedEnquiry(enq)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
                                             <MessageSquare size={18} />
                                         </button>
                                     </td>
@@ -301,6 +314,28 @@ const AdminHalls = () => {
                             </div>
 
                             <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Suitable For (Comma-separated)</label>
+                                <input 
+                                    type="text" 
+                                    value={formData.suitable_for.join(', ')}
+                                    onChange={(e) => setFormData({...formData, suitable_for: e.target.value.split(',').map(s => s.trim())})}
+                                    className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-orange-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
+                                    placeholder="Weddings, Receptions, Conferences"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Features / Amenities (Comma-separated)</label>
+                                <input 
+                                    type="text" 
+                                    value={formData.features.join(', ')}
+                                    onChange={(e) => setFormData({...formData, features: e.target.value.split(',').map(s => s.trim())})}
+                                    className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-orange-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
+                                    placeholder="Central AC, LED Screens, Stage Decor Included"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Description</label>
                                 <textarea 
                                     value={formData.description}
@@ -339,6 +374,58 @@ const AdminHalls = () => {
                                 {currentPackage ? 'Update Package' : 'Create Package'}
                             </button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {selectedEnquiry && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+                    <div className="bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <h2 className="text-2xl font-black text-slate-900">Enquiry Details</h2>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Lead context & specs</p>
+                            </div>
+                            <button onClick={() => setSelectedEnquiry(null)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
+                                <Plus size={24} className="rotate-45" />
+                            </button>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enquirer Name</div>
+                                    <div className="text-slate-900 font-bold text-lg mt-1">{selectedEnquiry.name}</div>
+                                </div>
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone Number</div>
+                                    <div className="text-slate-900 font-bold text-lg mt-1">{selectedEnquiry.phone}</div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</div>
+                                    <div className="text-slate-900 font-bold text-sm mt-1">{selectedEnquiry.email || 'N/A'}</div>
+                                </div>
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preferred Date</div>
+                                    <div className="text-slate-900 font-bold text-sm mt-1">{new Date(selectedEnquiry.preferred_date).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Event Type</div>
+                                    <div className="text-slate-900 font-bold text-sm mt-1">{selectedEnquiry.event_type}</div>
+                                </div>
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Expected Guests</div>
+                                    <div className="text-slate-900 font-bold text-sm mt-1">{selectedEnquiry.expected_guests} Guests</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Message</div>
+                                <p className="text-slate-600 bg-slate-50 p-4 rounded-2xl text-sm font-medium mt-1 leading-relaxed border border-slate-100 max-h-36 overflow-y-auto">{selectedEnquiry.message || 'No message provided.'}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

@@ -1,22 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { settingsService } from '../services/settingsService';
 
 export default function FloatingWhatsApp() {
-    const phoneNumber = "919752586956";
+    const [whatsappNum, setWhatsappNum] = useState("919752586956");
     const message = "Hi YOYO, I want to book tickets";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    useEffect(() => {
+        let active = true;
+        settingsService.public()
+            .then(data => {
+                if (active && data?.whatsapp_number) {
+                    setWhatsappNum(data.whatsapp_number.replace(/\D/g, ''));
+                }
+            })
+            .catch(() => {});
+        return () => { active = false; };
+    }, []);
+
+    const whatsappUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(message)}`;
 
     return (
         <a
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="floating-whatsapp fixed bottom-6 right-6 z-[90] flex items-center justify-center w-16 h-16 bg-[#25D366] text-white rounded-full shadow-[0_10px_40px_rgba(37,211,102,0.4)] hover:scale-110 active:scale-95 transition-all duration-300 group"
+            className="floating-whatsapp fixed bottom-6 right-6 z-[90] flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-[#25D366] text-white rounded-full shadow-[0_10px_40px_rgba(37,211,102,0.4)] hover:scale-110 active:scale-95 transition-all duration-300 group"
             aria-label="Chat on WhatsApp"
         >
             <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="32" 
-                height="32" 
+                width="28" 
+                height="28" 
                 fill="currentColor" 
                 className="bi bi-whatsapp drop-shadow-sm" 
                 viewBox="0 0 16 16"

@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { BarChart3, BookOpen, ClipboardList, FileClock, LayoutDashboard, MessageSquare, Settings, Ticket, Users, FileText, Image as ImageIcon, Utensils, Bed, GraduationCap, Tag, Search } from "lucide-react";
+import { BarChart3, BookOpen, ClipboardList, FileClock, LayoutDashboard, MessageSquare, Settings, Ticket, Users, FileText, Image as ImageIcon, Waves, Utensils, Bed, GraduationCap, Tag, Search } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { settingsService } from "../../services/settingsService";
 
 const navItems = [
   { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
@@ -9,6 +11,7 @@ const navItems = [
   { label: "Bookings", path: "/admin/bookings", icon: ClipboardList },
   { label: "Messages", path: "/admin/messages", icon: MessageSquare },
   { label: "Gallery", path: "/admin/gallery", icon: ImageIcon },
+  { label: "Attractions", path: "/admin/attractions", icon: Waves },
   { label: "Restaurant", path: "/admin/restaurant", icon: Utensils },
   { label: "Suites & Rooms", path: "/admin/suites", icon: Bed },
   { label: "Events & Halls", path: "/admin/halls", icon: GraduationCap },
@@ -22,7 +25,38 @@ const navItems = [
 
 export default function AdminSidebar() {
   const { user } = useAuth();
-  const visibleItems = navItems.filter((item) => !item.roles || item.roles.includes(user?.role));
+  const [toggles, setToggles] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    async function loadToggles() {
+      try {
+        const data = await settingsService.public();
+        if (active && data?.admin_sidebar_toggles) {
+          setToggles(data.admin_sidebar_toggles);
+        }
+      } catch (err) {
+        console.error("Failed to load sidebar toggles in AdminSidebar:", err);
+      }
+    }
+    loadToggles();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const visibleItems = navItems.filter((item) => {
+    if (item.roles && !item.roles.includes(user?.role)) {
+      return false;
+    }
+    if (item.label === "Settings") {
+      return true;
+    }
+    if (toggles && toggles[item.label] === false) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 text-white lg:block">

@@ -1,13 +1,14 @@
 import Hero from "../components/Hero"
 import DiscoverSection from "../components/DiscoverSection"
 import TrustSection from "../components/TrustSection"
-import OfferSection from "../components/OfferSection"
 import AboutSection from "../components/AboutSection"
 import RestaurantSection from "../components/RestaurantSection"
 import SuitesSection from "../components/SuitesSection"
 import HallBookingSection from "../components/HallBookingSection"
+import { usePageTitle } from "../hooks/usePageTitle"
 
 function Home() {
+  usePageTitle("Home")
     return (
         <main className="bg-white">
             {/* 1. Hero (includes Quick Info Bar) */}

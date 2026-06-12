@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Bar, BarChart } from "recharts";
-import { IndianRupee, Mail, Ticket, Users, ClipboardList } from "lucide-react";
+import { IndianRupee, Mail, Ticket, Users, ClipboardList, RefreshCw } from "lucide-react";
 import { adminService } from "../../services/adminService";
 import { formatINRFromPaise } from "../../services/api";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import EmptyState from "../../components/common/EmptyState";
 import StatCard from "../../components/Admin/StatCard";
 import StatusBadge from "../../components/Admin/StatusBadge";
+import { usePageTitle } from "../../hooks/usePageTitle";
 
 export default function AdminDashboard() {
+  usePageTitle("Dashboard");
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -50,9 +53,31 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-xs font-black uppercase tracking-widest text-blue-600">Overview</p>
-        <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Performance Dashboard</h2>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-widest text-blue-600">Overview</p>
+          <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Performance Dashboard</h2>
+        </div>
+        <button
+          onClick={async () => {
+            setRefreshing(true);
+            setError("");
+            try {
+              const data = await adminService.dashboardStats();
+              setStats(data);
+            } catch (err) {
+              setError(err.message || "Refresh failed.");
+            } finally {
+              setRefreshing(false);
+            }
+          }}
+          disabled={refreshing}
+          className="rounded-lg border border-slate-200 p-3 text-slate-500 hover:bg-slate-50 transition disabled:opacity-40"
+          title="Refresh dashboard"
+          aria-label="Refresh dashboard data"
+        >
+          <RefreshCw size={18} className={refreshing ? "animate-spin" : ""} />
+        </button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">

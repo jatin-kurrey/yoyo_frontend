@@ -78,13 +78,13 @@ export default function AdminTickets() {
       label: "Actions",
       render: (ticket) => (
         <div className="flex gap-2">
-          <button onClick={() => { setEditing(ticket); setFormOpen(true); }} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600" title="Edit">
+          <button onClick={() => { setEditing(ticket); setFormOpen(true); }} className="rounded-lg p-2.5 text-slate-500 hover:bg-blue-50 hover:text-blue-600" title="Edit ticket" aria-label={`Edit ${ticket.title}`}>
             <Edit2 size={17} />
           </button>
-          <button onClick={() => adminService.toggleTicketStatus(ticket.id).then(loadTickets).catch((err) => setError(err.message))} className="rounded-lg p-2 text-slate-500 hover:bg-amber-50 hover:text-amber-600" title="Toggle status">
+          <button onClick={() => adminService.toggleTicketStatus(ticket.id).then(loadTickets).catch((err) => setError(err.message))} className="rounded-lg p-2.5 text-slate-500 hover:bg-amber-50 hover:text-amber-600" title={`${ticket.is_active ? 'Deactivate' : 'Activate'} ticket`} aria-label={`${ticket.is_active ? 'Deactivate' : 'Activate'} ${ticket.title}`}>
             <Power size={17} />
           </button>
-          <button onClick={() => setDeleteTarget(ticket)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600" title="Delete">
+          <button onClick={() => setDeleteTarget(ticket)} className="rounded-lg p-2.5 text-slate-500 hover:bg-red-50 hover:text-red-600" title="Delete ticket" aria-label={`Delete ${ticket.title}`}>
             <Trash2 size={17} />
           </button>
         </div>

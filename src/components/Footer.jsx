@@ -2,32 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { settingsService } from "../services/settingsService";
+import { useReducedMotion } from "../hooks/useReducedMotion";
+import WhatsAppIcon from "./common/WhatsAppIcon";
 
 const galleryImages = [
   "https://images.unsplash.com/photo-1642717841683-c0323214617c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2F0ZXJwYXJrfGVufDB8fDB8fHww",
   "https://images.unsplash.com/photo-1707575878561-794d400bbb1e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d2F0ZXJwYXJrfGVufDB8fDB8fHww",
-  "https://images.unsplash.com/photo-1625254417927-3f586db72af5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHdhdZXJwYXJrfGVufDB8fDB8fHww",
-  "https://images.unsplash.com/photo-1503505946976-e489ce29e0fd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHdhdZXJwYXJrfGVufDB8fDB8fHww",
+  "https://images.unsplash.com/photo-1625254417927-3f586db72af5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHdhdGVycGFya3xlbnwwfHwwfHww",
+  "https://images.unsplash.com/photo-1503505946976-e489ce29e0fd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHdhdGVycGFya3xlbnwwfHwwfHww",
   "https://images.unsplash.com/photo-1708157730402-67cc5b19e335?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHdhdZXJwYXJrfGVufDB8fDB8fHww",
 ];
 
-const WhatsAppLogo = ({ size = 20 }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="currentColor"
-  >
-    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.891 11.892-11.891 3.181 0 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.481 8.414 0 6.556-5.332 11.892-11.893 11.892-1.99 0-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.591 5.457 0 9.894-4.437 9.894-9.893 0-2.642-1.029-5.125-2.897-6.993-1.868-1.869-4.35-2.898-6.993-2.898-5.457 0-9.894 4.437-9.894 9.894 0 2.235.614 3.911 1.72 5.805l-1.11 4.053 4.223-1.106c1.332.812 2.723 1.293 4.153 1.293h.001zm11.233-1.43c-.242-.12-.141-.429-.484-.6s-2.046-1.006-2.363-1.123-.544-.177-.771.163-.878 1.102-1.077 1.331-.399.256-.812.057c-.413-.199-1.742-.643-3.32-2.051-1.228-1.096-2.058-2.45-2.299-2.863-.242-.413-.026-.637.174-.835.18-.178.413-.485.62-.727.206-.242.275-.413.413-.687.138-.275.069-.515-.034-.727-.104-.212-.878-2.115-1.203-2.898-.316-.762-.642-.659-.878-.671l-.746-.013c-.256 0-.672.096-1.025.485-.353.388-1.345 1.316-1.345 3.208 0 1.893 1.378 3.719 1.572 3.978.194.259 2.712 4.143 6.571 5.806.917.395 1.635.631 2.193.809.921.293 1.76.252 2.423.153.739-.11 2.274-.929 2.593-1.826.319-.896.319-1.662.224-1.826-.095-.164-.351-.263-.593-.383z" />
-  </svg>
-);
+const WhatsAppLogo = ({ size = 20 }) => <WhatsAppIcon size={size} />;
 
 export default function Footer() {
   const marqueeRef = useRef(null);
   const [settings, setSettings] = useState(null);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
+    if (reduced) return;
     const ctx = gsap.context(() => {
       gsap.to(".footer-marquee", {
         xPercent: -50,
@@ -38,7 +32,7 @@ export default function Footer() {
     }, marqueeRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [reduced]);
 
   useEffect(() => {
     let active = true;
@@ -72,14 +66,15 @@ export default function Footer() {
               key={i}
               src={img}
               className="h-[140px] w-[260px] rounded-3xl object-cover hover:scale-105 transition-transform duration-500 shadow-2xl"
-              alt=""
+              alt="YOYO waterpark attraction"
+              loading="lazy" width={260} height={140}
             />
           ))}
         </div>
       </div>
 
       {/* FOOTER CONTENT */}
-      <div className="mx-auto max-w-7xl px-8 py-20 grid grid-cols-1 md:grid-cols-4 gap-16">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-20 grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-16">
         {/* ABOUT */}
         <div className="space-y-6">
           <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
@@ -141,7 +136,7 @@ export default function Footer() {
             </p>
             <p className="flex items-center gap-3 leading-relaxed">
               <span className="p-2 bg-white/5 rounded-lg text-xl">📍</span>
-              {settings?.address || "YOYO FUN N FOODS, Madhya Pradesh, India"}
+              {settings?.address || "Village Godhi, Tehsil Ahiwara, District Durg, Chhattisgarh 490036"}
             </p>
           </div>
         </div>

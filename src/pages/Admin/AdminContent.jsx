@@ -14,7 +14,7 @@ const AdminContent = () => {
     const [formData, setFormData] = useState({
         title: "",
         content: "",
-        is_published: truea
+        is_published: true
     });
 
     useEffect(() => {

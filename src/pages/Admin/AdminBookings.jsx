@@ -77,7 +77,7 @@ export default function AdminBookings() {
       key: "actions",
       label: "View",
       render: (booking) => (
-        <button onClick={() => setSelected(booking)} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600" title="View booking">
+        <button onClick={() => setSelected(booking)} className="rounded-lg p-2.5 text-slate-500 hover:bg-blue-50 hover:text-blue-600" title={`View booking ${booking.booking_id}`} aria-label={`View booking ${booking.booking_id}`}>
           <Eye size={17} />
         </button>
       ),

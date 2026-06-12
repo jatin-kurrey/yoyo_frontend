@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { restaurantService } from '../../services/restaurantService';
-import { Plus, Trash2, Edit2, Loader2, Utensils, Star, Search, Filter } from 'lucide-react';
+import { Plus, Trash2, Edit2, Loader2, Utensils, Coffee, Users, ShieldCheck, Star, Search, Filter } from 'lucide-react';
 import ImageUploadField from '../../components/Admin/ImageUploadField';
 import { formatINRFromPaise } from '../../services/api';
+
+const iconMap = {
+    Utensils: Utensils,
+    Coffee: Coffee,
+    Users: Users,
+    ShieldCheck: ShieldCheck
+};
 
 const AdminRestaurant = () => {
     const [items, setItems] = useState([]);
@@ -14,6 +21,7 @@ const AdminRestaurant = () => {
         description: '',
         image_url: '',
         category: 'Main Course',
+        icon_name: 'Utensils',
         price: 0,
         is_featured: false,
         sort_order: 0,
@@ -47,6 +55,7 @@ const AdminRestaurant = () => {
                 description: '',
                 image_url: '',
                 category: 'Main Course',
+                icon_name: 'Utensils',
                 price: 0,
                 is_featured: false,
                 sort_order: 0,
@@ -85,7 +94,7 @@ const AdminRestaurant = () => {
         <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Restaurant</h1>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Restaurant & Food</h1>
                     <p className="text-slate-500 font-medium mt-1">Manage culinary offerings and menus</p>
                 </div>
                 <button 
@@ -108,61 +117,70 @@ const AdminRestaurant = () => {
                             <tr className="bg-slate-50/50">
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Item</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Category</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Icon</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Price</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {items.map((item) => (
-                                <tr key={item.id} className="hover:bg-slate-50/30 transition-colors group">
-                                    <td className="px-8 py-5">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0">
-                                                {item.image_url ? (
-                                                    <img src={item.image_url} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
-                                                        <Utensils size={20} />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-black text-slate-900">{item.title}</span>
-                                                    {item.is_featured && <Star size={14} className="text-amber-400 fill-amber-400" />}
+                            {items.map((item) => {
+                                const IconComp = iconMap[item.icon_name] || Utensils;
+                                return (
+                                    <tr key={item.id} className="hover:bg-slate-50/30 transition-colors group">
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0">
+                                                    {item.image_url ? (
+                                                        <img src={item.image_url} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                                            <Utensils size={20} />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="text-xs text-slate-400 font-medium line-clamp-1">{item.description}</div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-black text-slate-900">{item.title}</span>
+                                                        {item.is_featured && <Star size={14} className="text-amber-400 fill-amber-400" />}
+                                                    </div>
+                                                    <div className="text-xs text-slate-400 font-medium line-clamp-1">{item.description}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <span className="px-3 py-1 bg-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 rounded-lg">
-                                            {item.category}
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <span className="font-black text-slate-900">{formatINRFromPaise(item.price)}</span>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                            item.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'
-                                        }`}>
-                                            {item.is_active ? 'Active' : 'Hidden'}
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                            <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
-                                                <Edit2 size={18} />
-                                            </button>
-                                            <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <span className="px-3 py-1 bg-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-600 rounded-lg">
+                                                {item.category}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <div className="text-slate-600">
+                                                <IconComp size={18} />
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <span className="font-black text-slate-900">{formatINRFromPaise(item.price)}</span>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                                item.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'
+                                            }`}>
+                                                {item.is_active ? 'Active' : 'Hidden'}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                                                    <Edit2 size={18} />
+                                                </button>
+                                                <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -217,6 +235,10 @@ const AdminRestaurant = () => {
                                                 onChange={(e) => setFormData({...formData, category: e.target.value})}
                                                 className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-emerald-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
                                             >
+                                                <option value="Restaurant">Restaurant Section</option>
+                                                <option value="Snacks">Snacks Section</option>
+                                                <option value="Packages">Packages Section</option>
+                                                <option value="Kitchen">Kitchen Section</option>
                                                 <option value="Starters">Starters</option>
                                                 <option value="Main Course">Main Course</option>
                                                 <option value="Desserts">Desserts</option>
@@ -224,6 +246,19 @@ const AdminRestaurant = () => {
                                                 <option value="Specials">Specials</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black uppercase tracking-widest text-slate-400">Display Icon</label>
+                                        <select 
+                                            value={formData.icon_name}
+                                            onChange={(e) => setFormData({...formData, icon_name: e.target.value})}
+                                            className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-emerald-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
+                                        >
+                                            <option value="Utensils">Utensils</option>
+                                            <option value="Coffee">Coffee</option>
+                                            <option value="Users">Users</option>
+                                            <option value="ShieldCheck">Shield Check</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

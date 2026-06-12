@@ -1,64 +1,92 @@
 import React, { useState } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, Search, MessageCircle, Phone, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const faqs = [
-    {
-        category: "General Information",
-        questions: [
-            {
-                q: "What are the park's operating hours?",
-                a: "YOYO Fun 'N' Foods is open daily from 10:00 AM to 7:00 PM. Water park attractions typically start closing 30 minutes before the main park closure."
-            },
-            {
-                q: "Where is the park located?",
-                a: "We are located at YOYO FUN N FOODS, Madhya Pradesh, India. You can find detailed directions on our Contact page."
-            },
-            {
-                q: "Is there an age limit for the park?",
-                a: "We welcome guests of all ages! However, certain rides and attractions have height and age restrictions for safety reasons. Please check the signage at each attraction."
-            }
-        ]
-    },
-    {
-        category: "Ticketing & Payments",
-        questions: [
-            {
-                q: "How do I book tickets online?",
-                a: "You can book tickets directly through our website by clicking the 'Book Tickets' button. We use Razorpay for secure and seamless payments."
-            },
-            {
-                q: "Do I need to print my online ticket?",
-                a: "No, you don't need to print it. Just show the digital ticket/confirmation email on your smartphone at the entrance gate."
-            },
-            {
-                q: "What is your refund policy?",
-                a: "Tickets are generally non-refundable. However, in cases of park-wide closure due to extreme weather, we may offer rescheduling or refunds. Please see our Refund Policy page for details."
-            }
-        ]
-    },
-    {
-        category: "Park Rules & Safety",
-        questions: [
-            {
-                q: "Is outside food allowed?",
-                a: "Outside food and beverages are not permitted inside the park. We have a wide variety of food stalls and multi-cuisine restaurants offering delicious meals."
-            },
-            {
-                q: "Are swimwear and costumes mandatory?",
-                a: "For the water park area, proper nylon or poly-nylon swimwear is mandatory for hygiene and safety. We have swimwear available for purchase or rent at our merchandise stores."
-            },
-            {
-                q: "Is parking available?",
-                a: "Yes, we have a large dedicated parking area for both two-wheelers and four-wheelers. Parking is free for our guests."
-            }
-        ]
-    }
-];
+import { usePageTitle } from '../hooks/usePageTitle';
+import { settingsService } from '../services/settingsService';
+import { useEffect } from 'react';
 
 const FAQ = () => {
+  usePageTitle("FAQ");
     const [searchTerm, setSearchTerm] = useState("");
     const [openIndex, setOpenIndex] = useState(null);
+    const [settings, setSettings] = useState(null);
+
+    useEffect(() => {
+        let active = true;
+        async function loadSettings() {
+            try {
+                const data = await settingsService.public();
+                if (active) {
+                    setSettings(data);
+                }
+            } catch (err) {
+                console.error("Failed to load settings in FAQ:", err);
+            }
+        }
+        loadSettings();
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    const phone = Array.isArray(settings?.phone_numbers) && settings.phone_numbers.length
+        ? settings.phone_numbers[0]
+        : "+91 97525 86956";
+    const cleanPhone = phone.replace(/\s+/g, "");
+
+    const faqs = [
+        {
+            category: "General Information",
+            questions: [
+                {
+                    q: "What are the park's operating hours?",
+                    a: `YOYO Fun 'N' Foods is open daily during: ${settings?.opening_hours || "10:00 AM to 06:00 PM"}. Water park attractions typically start closing 30 minutes before the main park closure.`
+                },
+                {
+                    q: "Where is the park located?",
+                    a: `We are located at ${settings?.address || "Village Godhi, Tehsil Ahiwara, District Durg, Chhattisgarh 490036"}. You can find detailed directions on our Contact page.`
+                },
+                {
+                    q: "Is there an age limit for the park?",
+                    a: "We welcome guests of all ages! However, certain rides and attractions have height and age restrictions for safety reasons. Please check the signage at each attraction."
+                }
+            ]
+        },
+        {
+            category: "Ticketing & Payments",
+            questions: [
+                {
+                    q: "How do I book tickets online?",
+                    a: "You can book tickets directly through our website by clicking the 'Book Tickets' button. We use Razorpay for secure and seamless payments."
+                },
+                {
+                    q: "Do I need to print my online ticket?",
+                    a: "No, you don't need to print it. Just show the digital ticket/confirmation email on your smartphone at the entrance gate."
+                },
+                {
+                    q: "What is your refund policy?",
+                    a: "Tickets are generally non-refundable. However, in cases of park-wide closure due to extreme weather, we may offer rescheduling or refunds. Please see our Refund Policy page for details."
+                }
+            ]
+        },
+        {
+            category: "Park Rules & Safety",
+            questions: [
+                {
+                    q: "Is outside food allowed?",
+                    a: "Outside food and beverages are not permitted inside the park. We have a wide variety of food stalls and multi-cuisine restaurants offering delicious meals."
+                },
+                {
+                    q: "Are swimwear and costumes mandatory?",
+                    a: "For the water park area, proper nylon or poly-nylon swimwear is mandatory for hygiene and safety. We have swimwear available for purchase or rent at our merchandise stores."
+                },
+                {
+                    q: "Is parking available?",
+                    a: "Yes, we have a large dedicated parking area for both two-wheelers and four-wheelers. Parking is free for our guests."
+                }
+            ]
+        }
+    ];
 
     const toggleAccordion = (index) => {
         setOpenIndex(openIndex === index ? null : index);
@@ -78,7 +106,7 @@ const FAQ = () => {
                 {/* Header */}
                 <div className="text-center mb-16 space-y-4">
                     <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold tracking-widest uppercase">Support Center</span>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tight">How can we <span className="text-blue-600 italic">help?</span></h1>
+                    <h1 className="text-[2.5rem] md:text-5xl font-black text-gray-900 tracking-tight">How can we <span className="text-blue-600 italic">help?</span></h1>
                     <p className="text-lg text-gray-500 font-medium">Find answers to common questions about your visit and ticket bookings.</p>
                 </div>
 
@@ -149,7 +177,7 @@ const FAQ = () => {
                             <Link to="/contact" className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-full font-bold transition-all hover:scale-105 flex items-center gap-2">
                                 <MessageCircle size={20} /> Contact Support
                             </Link>
-                            <a href="tel:+919752586956" className="px-8 py-4 bg-white/10 hover:bg-white/20 rounded-full font-bold transition-all flex items-center gap-2 border border-white/10">
+                            <a href={`tel:${cleanPhone}`} className="px-8 py-4 bg-white/10 hover:bg-white/20 rounded-full font-bold transition-all flex items-center gap-2 border border-white/10">
                                 <Phone size={20} /> Call Us Direct
                             </a>
                         </div>

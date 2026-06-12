@@ -1,83 +1,127 @@
-import React, { useState } from 'react';
-import { Camera, X, Maximize2, ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Camera, X, Maximize2, ChevronLeft, ChevronRight, LayoutGrid, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { galleryService } from '../services/galleryService';
+import { usePageTitle } from '../hooks/usePageTitle';
 
-const galleryItems = [
+const fallbackGalleryItems = [
     {
         id: 1,
         title: "Main Wave Pool",
         category: "Water Park",
-        image: "https://images.unsplash.com/photo-1549413203-057088998da0?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?q=80&w=1200&auto=format&fit=crop",
         size: "large" // 2x2
     },
     {
         id: 2,
         title: "Family Dining Area",
         category: "Food",
-        image: "https://images.unsplash.com/photo-1550966841-391ad55a1334?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600&auto=format&fit=crop",
         size: "small" // 1x1
     },
     {
         id: 3,
         title: "Giant Slide Tower",
         category: "Water Park",
-        image: "https://images.unsplash.com/photo-1707575878561-794d400bbb1e?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?q=80&w=800&auto=format&fit=crop",
         size: "tall" // 1x2
     },
     {
         id: 4,
         title: "Luxury Resort Suite",
         category: "Stay",
-        image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=1200&auto=format&fit=crop",
         size: "wide" // 2x1
     },
     {
         id: 5,
         title: "Night View of Park",
         category: "Events",
-        image: "https://images.unsplash.com/photo-1708157730402-67cc5b19e335?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=600&auto=format&fit=crop",
         size: "small"
     },
     {
         id: 6,
         title: "Kids Activity Zone",
         category: "Play",
-        image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=600&auto=format&fit=crop",
         size: "small"
     },
     {
         id: 7,
         title: "Poolside Cafe",
         category: "Food",
-        image: "https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=600&auto=format&fit=crop",
         size: "small"
     },
     {
         id: 8,
         title: "Lazy River Walk",
         category: "Water Park",
-        image: "https://images.unsplash.com/photo-1625254417927-3f586db72af5?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1629113645366-3d71206637ba?q=80&w=1200&auto=format&fit=crop",
         size: "wide"
     },
     {
         id: 9,
         title: "Birthday Celebration",
         category: "Events",
-        image: "https://images.unsplash.com/photo-1530103043960-ef38714abb15?q=80&w=1470&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=600&auto=format&fit=crop",
         size: "small"
     },
 ];
 
 const categories = ["All", "Water Park", "Food", "Stay", "Play", "Events"];
 
+const getMediaUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("data:")) {
+        return path;
+    }
+    const baseUrl = (import.meta.env.VITE_API_URL || "http://localhost:8080").replace(/\/$/, "");
+    return `${baseUrl}/${path.replace(/^\//, "")}`;
+};
+
 const Gallery = () => {
+  usePageTitle("Gallery");
+    const [items, setItems] = useState([]);
     const [filter, setFilter] = useState("All");
     const [selectedIdx, setSelectedIdx] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [isLoaded, setIsLoaded] = useState(true);
 
+    useEffect(() => {
+        let active = true;
+        galleryService.listPublic()
+            .then(data => {
+                if (active) {
+                    if (data && data.length > 0) {
+                        const mapped = data.map((item, idx) => ({
+                            id: item.id,
+                            title: item.title,
+                            category: item.category,
+                            image: getMediaUrl(item.image_url),
+                            size: item.sort_order % 4 === 0 ? "large" : (item.sort_order % 3 === 0 ? "wide" : (item.sort_order % 2 === 0 ? "tall" : "small"))
+                        }));
+                        setItems(mapped);
+                    } else {
+                        setItems(fallbackGalleryItems);
+                    }
+                    setLoading(false);
+                }
+            })
+            .catch(err => {
+                console.error("Failed to load gallery items, using premium fallbacks:", err);
+                if (active) {
+                    setItems(fallbackGalleryItems);
+                    setLoading(false);
+                }
+            });
+        return () => { active = false; };
+    }, []);
+
     const filteredItems = filter === "All"
-        ? galleryItems
-        : galleryItems.filter(item => item.category === filter);
+        ? items
+        : items.filter(item => item.category?.toLowerCase() === filter.toLowerCase());
 
     const handlePrevious = (e) => {
         e.stopPropagation();
@@ -89,7 +133,6 @@ const Gallery = () => {
         setSelectedIdx(prev => (prev === filteredItems.length - 1 ? 0 : prev + 1));
     };
 
-    // Bento Grid Classes Mapper
     const getGridSpan = (size) => {
         switch (size) {
             case 'large': return 'md:col-span-2 md:row-span-2';
@@ -99,15 +142,26 @@ const Gallery = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50/30">
+                <div className="text-center space-y-4">
+                    <Loader2 className="animate-spin text-blue-600 mx-auto" size={40} />
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-400">Loading Bento Showcase...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen pt-32 pb-24 px-4 bg-gray-50/30">
+        <div className="min-h-screen pt-32 pb-32 px-4 bg-gray-50/30">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className={`text-center mb-16 space-y-4 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                     <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold tracking-widest uppercase flex items-center gap-2 w-fit mx-auto">
                         <LayoutGrid size={14} /> Bento Showcase
                     </span>
-                    <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter">Visual <span className="text-blue-600 italic">Bento</span></h1>
+                    <h1 className="text-[2.5rem] md:text-7xl font-black text-gray-900 tracking-tighter">Visual <span className="text-blue-600 italic">Bento</span></h1>
                     <p className="text-lg text-gray-500 max-w-2xl mx-auto font-medium">A curated mosaic of adventures. Every block tells a story of joy and discovery at YOYO.</p>
                 </div>
 
@@ -146,7 +200,7 @@ const Gallery = () => {
                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
                             {/* Overlay Card */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-10 transform translate-y-4 group-hover:translate-y-0">
+                            <div className="card-overlay absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-10 transform translate-y-4 group-hover:translate-y-0">
                                 <span className="text-blue-300 text-xs font-black uppercase tracking-[0.2em] mb-3">{item.category}</span>
                                 <h3 className="text-white text-2xl font-black mb-2 leading-tight">{item.title}</h3>
                                 <div className="flex items-center gap-3 text-white/70 text-sm font-bold">

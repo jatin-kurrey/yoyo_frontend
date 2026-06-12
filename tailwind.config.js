@@ -12,6 +12,16 @@ export default {
       },
 
       /* =========================
+         BORDER RADIUS TOKENS
+      ========================= */
+      borderRadius: {
+        sm: "24px",
+        md: "32px",
+        lg: "40px",
+        xl: "48px",
+      },
+
+      /* =========================
          KEYFRAMES
       ========================= */
       keyframes: {
@@ -51,6 +61,5 @@ export default {
   },
   plugins: [],
 };
-// Brand text one-by-one animation
 
 

@@ -1,38 +1,43 @@
-import { useEffect } from "react"
+import { useEffect, lazy, Suspense } from "react"
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from "react-router-dom"
 import Lenis from "@studio-freight/lenis"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
-import Home from "./pages/Home"
-import Tickets from "./pages/Tickets"
-import Contact from "./pages/Contact"
-import AdminDashboard from "./pages/Admin/AdminDashboard"
-import AdminLogin from "./pages/Admin/AdminLogin"
-import AdminTickets from "./pages/Admin/AdminTickets"
-import AdminBookings from "./pages/Admin/AdminBookings"
-import AdminMessages from "./pages/Admin/AdminMessages"
-import AdminSettings from "./pages/Admin/AdminSettings"
-import AdminUsers from "./pages/Admin/AdminUsers"
-import AdminAuditLogs from "./pages/Admin/AdminAuditLogs"
-import AdminHero from "./pages/Admin/AdminHero"
-import AdminContent from "./pages/Admin/AdminContent"
-import AdminGallery from "./pages/Admin/AdminGallery"
-import AdminRestaurant from "./pages/Admin/AdminRestaurant"
-import AdminSuites from "./pages/Admin/AdminSuites"
-import AdminHalls from "./pages/Admin/AdminHalls"
-import AdminOffers from "./pages/Admin/AdminOffers"
-import AdminSEO from "./pages/Admin/AdminSEO"
+import LoadingSpinner from "./components/common/LoadingSpinner"
+
+const Home = lazy(() => import("./pages/Home"))
+const Tickets = lazy(() => import("./pages/Tickets"))
+const Contact = lazy(() => import("./pages/Contact"))
+const AdminDashboard = lazy(() => import("./pages/Admin/AdminDashboard"))
+const AdminLogin = lazy(() => import("./pages/Admin/AdminLogin"))
+const AdminTickets = lazy(() => import("./pages/Admin/AdminTickets"))
+const AdminBookings = lazy(() => import("./pages/Admin/AdminBookings"))
+const AdminMessages = lazy(() => import("./pages/Admin/AdminMessages"))
+const AdminSettings = lazy(() => import("./pages/Admin/AdminSettings"))
+const AdminUsers = lazy(() => import("./pages/Admin/AdminUsers"))
+const AdminAuditLogs = lazy(() => import("./pages/Admin/AdminAuditLogs"))
+const AdminHero = lazy(() => import("./pages/Admin/AdminHero"))
+const AdminContent = lazy(() => import("./pages/Admin/AdminContent"))
+const AdminGallery = lazy(() => import("./pages/Admin/AdminGallery"))
+const AdminAttractions = lazy(() => import("./pages/Admin/AdminAttractions"))
+const AdminRestaurant = lazy(() => import("./pages/Admin/AdminRestaurant"))
+const AdminSuites = lazy(() => import("./pages/Admin/AdminSuites"))
+const AdminHalls = lazy(() => import("./pages/Admin/AdminHalls"))
+const AdminOffers = lazy(() => import("./pages/Admin/AdminOffers"))
+const AdminSEO = lazy(() => import("./pages/Admin/AdminSEO"))
 import AdminLayout from "./components/Admin/AdminLayout"
 import ProtectedAdminRoute from "./components/Admin/ProtectedAdminRoute"
-import Privacy from "./pages/Privacy"
-import Terms from "./pages/Terms"
-import Refund from "./pages/Refund"
-import FAQ from "./pages/FAQ"
-import Gallery from "./pages/Gallery"
+const Privacy = lazy(() => import("./pages/Privacy"))
+const Terms = lazy(() => import("./pages/Terms"))
+const Refund = lazy(() => import("./pages/Refund"))
+const FAQ = lazy(() => import("./pages/FAQ"))
+const Gallery = lazy(() => import("./pages/Gallery"))
+const NotFound = lazy(() => import("./pages/NotFound"))
 import ScrollToTop from "./components/ScrollToTop"
 import AuthProvider from "./context/AuthProvider"
 import FloatingWhatsApp from "./components/FloatingWhatsApp"
 import TopTicker from "./components/TopTicker"
+import ErrorBoundary from "./components/common/ErrorBoundary"
 
 function AdminPage({ children, roles }) {
   return (
@@ -48,9 +53,13 @@ function AppShell() {
 
   return (
     <>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[300] focus:px-6 focus:py-3 focus:bg-blue-600 focus:text-white focus:rounded-xl focus:text-sm focus:font-black focus:outline-none">
+        Skip to main content
+      </a>
       <ScrollToTop />
       {!isAdminRoute && <Navbar />}
-      <Routes>
+      <Suspense fallback={<LoadingSpinner />}>
+      <Routes id="main-content">
         <Route path="/" element={<Home />} />
         <Route path="/tickets" element={<Tickets />} />
         <Route path="/contact" element={<Contact />} />
@@ -67,6 +76,7 @@ function AppShell() {
         <Route path="/admin/bookings" element={<AdminPage><AdminBookings /></AdminPage>} />
         <Route path="/admin/messages" element={<AdminPage><AdminMessages /></AdminPage>} />
         <Route path="/admin/gallery" element={<AdminPage><AdminGallery /></AdminPage>} />
+        <Route path="/admin/attractions" element={<AdminPage><AdminAttractions /></AdminPage>} />
         <Route path="/admin/restaurant" element={<AdminPage><AdminRestaurant /></AdminPage>} />
         <Route path="/admin/suites" element={<AdminPage><AdminSuites /></AdminPage>} />
         <Route path="/admin/halls" element={<AdminPage><AdminHalls /></AdminPage>} />
@@ -76,7 +86,9 @@ function AppShell() {
         <Route path="/admin/settings" element={<AdminPage roles={["super_admin", "admin"]}><AdminSettings /></AdminPage>} />
         <Route path="/admin/users" element={<AdminPage roles={["super_admin", "admin"]}><AdminUsers /></AdminPage>} />
         <Route path="/admin/audit-logs" element={<AdminPage roles={["super_admin", "admin"]}><AdminAuditLogs /></AdminPage>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
       {!isAdminRoute && (
         <>
           <Footer />
@@ -98,20 +110,29 @@ function App() {
       smoothWheel: true
     })
 
+    window.__lenis = lenis
+
     function raf(time) {
       lenis.raf(time)
       requestAnimationFrame(raf)
     }
 
     requestAnimationFrame(raf)
+
+    return () => {
+      lenis.destroy()
+      delete window.__lenis
+    }
   }, [])
 
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <Router>
         <AppShell />
       </Router>
     </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

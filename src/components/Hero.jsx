@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { Clock, MapPin, Ticket, Star, ArrowRight } from "lucide-react";
 import { heroService } from "../services/heroService";
+import { settingsService } from "../services/settingsService";
+import { ticketService } from "../services/ticketService";
 
 const FALLBACK_SLIDES = [
   {
@@ -25,13 +27,22 @@ export default function Hero() {
   const [index, setIndex] = useState(0);
   const [slides, setSlides] = useState(FALLBACK_SLIDES);
   const [loading, setLoading] = useState(true);
+  const [infoIndex, setInfoIndex] = useState(0);
+  const [settings, setSettings] = useState(null);
+  const [lowestPrice, setLowestPrice] = useState("₹499");
 
   useEffect(() => {
     async function fetchSlides() {
       try {
         const data = await heroService.list();
         if (data && data.length > 0) {
-          setSlides(data);
+          const mapped = data.map(slide => ({
+            ...slide,
+            headline: slide.title || slide.headline,
+            subheadline: slide.subtitle || slide.subheadline || slide.description,
+            cta_text: slide.cta_label || slide.cta_text,
+          }));
+          setSlides(mapped);
         }
       } catch (error) {
         console.error("Failed to load hero slides:", error);
@@ -39,8 +50,72 @@ export default function Hero() {
         setLoading(false);
       }
     }
+    async function fetchSettings() {
+      try {
+        const data = await settingsService.public();
+        setSettings(data);
+      } catch (error) {
+        console.error("Failed to load settings in Hero:", error);
+      }
+    }
+    async function fetchTickets() {
+      try {
+        const data = await ticketService.list();
+        if (data && data.length > 0) {
+          const minPrice = Math.min(...data.map(t => t.price));
+          setLowestPrice(`₹${minPrice}`);
+        }
+      } catch (error) {
+        console.error("Failed to load tickets in Hero:", error);
+      }
+    }
     fetchSlides();
+    fetchSettings();
+    fetchTickets();
   }, []);
+
+  const getLocationCityAndSub = () => {
+    if (!settings?.address) return { city: "Indore", sub: "Bypass" };
+    const parts = settings.address.split(",");
+    if (parts.length < 2) return { city: parts[0]?.trim() || "Indore", sub: "" };
+    const city = parts[parts.length - 2]?.trim() || "Indore";
+    const sub = parts[parts.length - 3]?.trim() || "Bypass";
+    return { city, sub };
+  };
+
+  const loc = getLocationCityAndSub();
+
+  const getOpeningHours = () => {
+    if (!settings?.opening_hours) return "10:00 - 18:00";
+    return settings.opening_hours.replace(/Open Today:\s*/i, "");
+  };
+
+  const quickInfo = [
+    {
+      label: "Starts From",
+      value: lowestPrice,
+      sub: "/ Person",
+      icon: <Ticket size={22} />,
+      colorClass: "text-blue-400 bg-blue-500/20",
+      accent: "text-blue-400"
+    },
+    {
+      label: "Location",
+      value: loc.city,
+      sub: loc.sub,
+      icon: <MapPin size={22} />,
+      colorClass: "text-orange-400 bg-orange-500/20",
+      accent: "text-orange-400"
+    },
+    {
+      label: "Status",
+      value: "Open",
+      sub: getOpeningHours(),
+      icon: <Clock size={22} />,
+      colorClass: "text-emerald-400 bg-emerald-500/20",
+      accent: "text-emerald-400"
+    }
+  ];
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -50,18 +125,26 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [slides.length]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setInfoIndex((prev) => (prev + 1) % 3);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative overflow-visible h-screen">
+    <section className="relative overflow-visible min-h-screen lg:h-screen">
       {/* HERO MAIN */}
       <div className="relative h-full w-full overflow-hidden bg-slate-950">
-        {/* ... (slides map remains same) ... */}
-        {slides.map((slide, i) => (
+        {slides.map((slide, i) => {
+          const validUrl = isValidUrl(slide.image_url) ? slide.image_url : "";
+          return (
           <div
             key={slide.id || i}
             className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ${
               i === index ? "opacity-100 scale-100" : "opacity-0 scale-110"
             }`}
-            style={{ backgroundImage: `url(${slide.image_url})` }}
+            style={{ backgroundImage: validUrl ? `url(${validUrl})` : undefined }}
           >
             {/* Immersive Gradient Scrim */}
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/30 to-slate-950/90" />
@@ -69,7 +152,8 @@ export default function Hero() {
             {/* Animated Water Reflections (Subtle Overlay) */}
             <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
           </div>
-        ))}
+          );
+        })}
 
         {/* Content */}
         <div className="relative z-10 flex h-full items-center justify-center pt-32 pb-48">
@@ -87,7 +171,7 @@ export default function Hero() {
               </div>
             </div>
 
-            <h1 className="[font-family:'Outfit',sans-serif] font-black tracking-tighter leading-[1] text-4xl md:text-7xl lg:text-8xl mb-8 drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <h1 className="[font-family:'Outfit',sans-serif] font-black tracking-tighter leading-[1] text-[2rem] md:text-7xl lg:text-8xl mb-8 drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               {slides[index].headline.split(' ').map((word, i) => {
                 const isThrilling = word.toLowerCase().includes('thrilling');
                 const isWaterpark = word.toLowerCase().includes('waterpark');
@@ -102,7 +186,7 @@ export default function Hero() {
               })}
             </h1>
 
-            <p className="mx-auto mb-10 max-w-2xl text-base md:text-xl lg:text-2xl text-white/90 font-medium leading-relaxed opacity-90 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500 px-4">
+            <p className="mx-auto mb-10 max-w-2xl text-sm md:text-xl lg:text-2xl text-white/90 font-medium leading-relaxed opacity-90 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500 px-4">
               {slides[index].subheadline}
             </p>
 
@@ -146,81 +230,80 @@ export default function Hero() {
         )}
       </div>
 
-      {/* QUICK INFO BAR - 100vh Visibility Optimization */}
-      <div className="absolute -bottom-8 md:bottom-6 left-1/2 -translate-x-1/2 w-full max-w-6xl px-4 md:px-6 z-40">
+      {/* QUICK INFO BAR */}
+      <div className="absolute -bottom-8 md:bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-full max-w-6xl z-40">
+        
         {/* Desktop Grid Layout */}
         <div className="hidden md:grid md:grid-cols-3 gap-px rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_-15px_rgba(0,0,0,0.4)] border border-white/20 bg-white/10 backdrop-blur-3xl">
-          <div className="flex items-center gap-4 p-8 bg-transparent hover:bg-white/10 transition-all group">
-            <div className="w-14 h-14 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500">
-              <Ticket size={28} className="transition-transform group-hover:rotate-12" />
+          {quickInfo.map((item, idx) => (
+            <div 
+              key={idx} 
+              className={`flex items-center gap-4 p-8 bg-transparent hover:bg-white/10 transition-all group ${
+                idx === 1 ? "border-x border-white/10" : ""
+              }`}
+            >
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${item.colorClass} group-hover:bg-white group-hover:text-slate-900`}>
+                {item.icon}
+              </div>
+              <div>
+                <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${item.accent}`}>{item.label}</p>
+                <p className="text-2xl font-black text-white leading-none">
+                  {item.value} <span className="text-sm font-medium text-white/50">{item.sub}</span>
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-1">Starts From</p>
-              <p className="text-2xl font-black text-white leading-none">₹499 <span className="text-sm font-medium text-white/50">/ Person</span></p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4 p-8 bg-transparent hover:bg-white/10 transition-all group border-x border-white/10">
-            <div className="w-14 h-14 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
-              <MapPin size={28} className="transition-transform group-hover:bounce" />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em] mb-1">Location</p>
-              <p className="text-2xl font-black text-white leading-none">Indore <span className="text-sm font-medium text-white/50">Bypass</span></p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 p-8 bg-transparent hover:bg-white/10 transition-all group">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
-              <Clock size={28} className="transition-transform group-hover:scale-110" />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1">Status</p>
-              <p className="text-2xl font-black text-white leading-none">Open <span className="text-sm font-medium text-white/50">10:00 - 18:00</span></p>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Mobile Infinite Scroll Layout */}
-        <div className="md:hidden w-full overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.4)]">
-          <div className="flex animate-infinite-scroll py-4 no-scrollbar">
-            {/* Double the list for seamless loop */}
-            {[...Array(2)].map((_, groupIndex) => (
-              <div key={groupIndex} className="flex gap-4 px-2">
-                <div className="flex-shrink-0 w-[260px] flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/5 shadow-inner">
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
-                    <Ticket size={22} />
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-0.5">Price</p>
-                    <p className="text-xl font-black text-white leading-none">₹499 <span className="text-[11px] font-medium text-white/50">/ Person</span></p>
-                  </div>
+        {/* Mobile Smooth Auto-Play Carousel Layout */}
+        <div className="md:hidden w-[90%] mx-auto overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.4)] relative">
+          <div className="relative h-[85px] w-full flex items-center justify-center overflow-hidden py-4 px-6">
+            {quickInfo.map((item, idx) => (
+              <div
+                key={idx}
+                className={`absolute inset-0 flex items-center gap-4 px-8 transition-all duration-700 ease-in-out ${
+                  idx === infoIndex 
+                    ? "opacity-100 translate-y-0 scale-100 visible" 
+                    : "opacity-0 translate-y-4 scale-95 invisible"
+                }`}
+              >
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${item.colorClass}`}>
+                  {item.icon}
                 </div>
-
-                <div className="flex-shrink-0 w-[260px] flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/5 shadow-inner">
-                  <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400">
-                    <MapPin size={22} />
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-0.5">Location</p>
-                    <p className="text-xl font-black text-white leading-none">Indore <span className="text-[11px] font-medium text-white/50">Bypass</span></p>
-                  </div>
-                </div>
-
-                <div className="flex-shrink-0 w-[260px] flex items-center gap-4 p-5 bg-white/5 rounded-2xl border border-white/5 shadow-inner">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                    <Clock size={22} />
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-0.5">Status</p>
-                    <p className="text-xl font-black text-white leading-none">Open <span className="text-[11px] font-medium text-white/50">10:00 - 18:00</span></p>
-                  </div>
+                <div>
+                  <p className={`text-[8px] font-black uppercase tracking-widest mb-0.5 ${item.accent}`}>{item.label}</p>
+                  <p className="text-lg font-black text-white leading-none">
+                    {item.value} <span className="text-[10px] font-medium text-white/50">{item.sub}</span>
+                  </p>
                 </div>
               </div>
             ))}
           </div>
+          
+          {/* Subtle dots indicator for carousel */}
+          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {quickInfo.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  idx === infoIndex ? "w-4 bg-white" : "w-1.5 bg-white/20"
+                }`}
+              />
+            ))}
+          </div>
         </div>
+
       </div>
     </section>
   );
+}
+
+function isValidUrl(str) {
+  if (!str || typeof str !== "string") return false;
+  try {
+    const url = new URL(str);
+    return url.protocol === "https:" || url.protocol === "http:" || url.protocol === "ftp:";
+  } catch {
+    return str.startsWith("/") && !str.includes("..") && !str.includes("\\");
+  }
 }

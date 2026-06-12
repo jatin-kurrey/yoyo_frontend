@@ -16,7 +16,10 @@ const ImageUploadField = ({ label, value, onChange, folder = "general", placehol
             
             <div 
                 onClick={() => setIsPickerOpen(true)}
-                className="group relative w-full h-48 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all overflow-hidden"
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setIsPickerOpen(true); } }}
+                role="button"
+                tabIndex={0}
+                className="group relative w-full h-48 rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
             >
                 {value ? (
                     <>
@@ -31,6 +34,7 @@ const ImageUploadField = ({ label, value, onChange, folder = "general", placehol
                             </div>
                         </div>
                         <button 
+                            type="button"
                             onClick={handleClear}
                             className="absolute top-4 right-4 p-2 bg-white/90 text-slate-400 hover:text-red-600 rounded-full shadow-lg backdrop-blur-sm transition-all hover:scale-110"
                         >

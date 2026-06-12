@@ -2,13 +2,16 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { useReducedMotion } from "../hooks/useReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function FacilitiesSection() {
   const sectionRef = useRef(null);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
+    if (reduced) return;
     const ctx = gsap.context(() => {
       /* LEFT CONTENT */
       gsap.from(".fac-left", {
@@ -50,12 +53,12 @@ export default function FacilitiesSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [reduced]);
 
   return (
     <section
       ref={sectionRef}
-      className="relative py-28 overflow-hidden bg-gradient-to-br from-[#0a0f1d] via-[#1e4ed8] to-[#2563eb]"
+      className="relative py-16 md:py-28 overflow-hidden bg-gradient-to-br from-[#0a0f1d] via-[#1e4ed8] to-[#2563eb]"
     >
       <div className="mx-auto max-w-7xl px-6">
         {/* TOP GRID */}
@@ -67,7 +70,7 @@ export default function FacilitiesSection() {
               Facilities
             </span>
 
-            <h2 className="font-heading text-[2.8rem] leading-tight font-extrabold text-white md:text-[3.4rem]">
+            <h2 className="font-heading text-4xl md:text-[2.8rem] lg:text-[3.4rem] leading-tight font-extrabold text-white">
               Discover the Spaces <br />
               That Make YOYO Special
             </h2>
@@ -85,25 +88,33 @@ export default function FacilitiesSection() {
               <img
                 src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=600&auto=format&fit=crop"
                 className="collage-img left-0 top-20 rotate-[-8deg] shadow-2xl"
-                alt=""
+                alt="Waterpark pool area with slides"
+                loading="lazy" width={170} height={230}
+                aria-hidden="true"
               />
 
               <img
                 src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=600&auto=format&fit=crop"
                 className="collage-img left-28 top-0 rotate-[6deg] shadow-2xl"
-                alt=""
+                alt="Waterpark attraction overview"
+                loading="lazy" width={170} height={230}
+                aria-hidden="true"
               />
 
               <img
                 src="https://images.unsplash.com/photo-1500534623283-312aade485b7?q=80&w=600&auto=format&fit=crop"
                 className="collage-img left-56 top-20 rotate-[-4deg] shadow-2xl"
-                alt=""
+                alt="People enjoying water rides"
+                loading="lazy" width={170} height={230}
+                aria-hidden="true"
               />
 
               <img
-                src="https://images.unsplash.com/photo-1500534623283-312aade485b7?q=80&w=600&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?q=80&w=600&auto=format&fit=crop"
                 className="collage-img left-80 top-6 rotate-[8deg] shadow-2xl"
-                alt=""
+                alt="Waterpark pool and lounge area"
+                loading="lazy" width={170} height={230}
+                aria-hidden="true"
               />
 
             </div>
@@ -133,7 +144,8 @@ export default function FacilitiesSection() {
               <img
                 src={card.img}
                 className="h-[380px] w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                alt=""
+                alt={card.title}
+                loading="lazy" width={800} height={380}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent opacity-80" />
               <h4 className="absolute bottom-10 left-10 text-xl font-bold text-white tracking-tight">

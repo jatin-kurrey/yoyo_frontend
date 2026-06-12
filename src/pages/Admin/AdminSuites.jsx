@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { suiteService } from '../../services/suiteService';
-import { Plus, Trash2, Edit2, Loader2, Bed, Users, IndianRupee, Layers, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Trash2, Edit2, Loader2, Bed, Users, Zap, Home, ShieldCheck, Hotel, IndianRupee, Layers, CheckCircle2, XCircle } from 'lucide-react';
 import ImageUploadField from '../../components/Admin/ImageUploadField';
 import { formatINRFromPaise } from '../../services/api';
+
+const iconMap = {
+    Zap: Zap,
+    Home: Home,
+    ShieldCheck: ShieldCheck,
+    Hotel: Hotel
+};
 
 const AdminSuites = () => {
     const [suites, setSuites] = useState([]);
@@ -14,6 +21,7 @@ const AdminSuites = () => {
         slug: '',
         description: '',
         image_url: '',
+        icon_name: 'Zap',
         price_per_night: 0,
         max_guests: 2,
         amenities: [],
@@ -51,6 +59,7 @@ const AdminSuites = () => {
                 slug: '',
                 description: '',
                 image_url: '',
+                icon_name: 'Zap',
                 price_per_night: 0,
                 max_guests: 2,
                 amenities: [],
@@ -101,7 +110,7 @@ const AdminSuites = () => {
         <div className="p-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Suites & Rooms</h1>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Suites & Stay</h1>
                     <p className="text-slate-500 font-medium mt-1">Manage luxury accommodation inventory</p>
                 </div>
                 <button 
@@ -119,57 +128,65 @@ const AdminSuites = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6">
-                    {suites.map((suite) => (
-                        <div key={suite.id} className="group bg-white rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col md:flex-row">
-                            <div className="md:w-72 h-64 md:h-auto overflow-hidden relative">
-                                <img src={suite.image_url} alt={suite.title} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                                <div className="absolute top-4 left-4">
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${
-                                        suite.is_active ? 'bg-emerald-500/90 text-white' : 'bg-slate-500/90 text-white'
-                                    }`}>
-                                        {suite.is_active ? 'Available' : 'Disabled'}
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="flex-1 p-8 flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <h3 className="text-2xl font-black text-slate-900">{suite.title}</h3>
-                                            <p className="text-slate-400 text-sm font-bold mt-1">/{suite.slug}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="text-2xl font-black text-indigo-600">{formatINRFromPaise(suite.price_per_night)}</div>
-                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per Night</div>
-                                        </div>
+                    {suites.map((suite) => {
+                        const IconComponent = iconMap[suite.icon_name] || Zap;
+                        return (
+                            <div key={suite.id} className="group bg-white rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col md:flex-row">
+                                <div className="md:w-72 h-64 md:h-auto overflow-hidden relative">
+                                    <img src={suite.image_url} alt={suite.title} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                    <div className="absolute top-4 left-4">
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md ${
+                                            suite.is_active ? 'bg-emerald-500/90 text-white' : 'bg-slate-500/90 text-white'
+                                        }`}>
+                                            {suite.is_active ? 'Available' : 'Disabled'}
+                                        </span>
                                     </div>
-                                    <p className="text-slate-500 mt-4 line-clamp-2">{suite.description}</p>
-                                    <div className="flex flex-wrap gap-2 mt-6">
-                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-xl text-[10px] font-black uppercase text-slate-600">
-                                            <Users size={12} />
-                                            {suite.max_guests} Guests
-                                        </div>
-                                        {Array.isArray(suite.amenities) && suite.amenities.map(a => (
-                                            <div key={a} className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase">
-                                                <CheckCircle2 size={12} />
-                                                {a}
+                                </div>
+                                <div className="flex-1 p-8 flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                                                    <span className="p-2 rounded-xl bg-slate-50 text-slate-600">
+                                                        <IconComponent size={20} />
+                                                    </span>
+                                                    {suite.title}
+                                                </h3>
+                                                <p className="text-slate-400 text-sm font-bold mt-1">/{suite.slug}</p>
                                             </div>
-                                        ))}
+                                            <div className="text-right">
+                                                <div className="text-2xl font-black text-indigo-600">{formatINRFromPaise(suite.price_per_night)}</div>
+                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per Night</div>
+                                            </div>
+                                        </div>
+                                        <p className="text-slate-500 mt-4 line-clamp-2">{suite.description}</p>
+                                        <div className="flex flex-wrap gap-2 mt-6">
+                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-xl text-[10px] font-black uppercase text-slate-600">
+                                                <Users size={12} />
+                                                {suite.max_guests} Guests
+                                            </div>
+                                            {Array.isArray(suite.amenities) && suite.amenities.map(a => (
+                                                <div key={a} className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase">
+                                                    <CheckCircle2 size={12} />
+                                                    {a}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-50">
+                                        <button onClick={() => handleOpenModal(suite)} className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-slate-600 hover:text-indigo-600 transition-colors">
+                                            <Edit2 size={14} />
+                                            Edit Details
+                                        </button>
+                                        <button onClick={() => handleDelete(suite.id)} className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                                            <Trash2 size={14} />
+                                            Delete
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-50">
-                                    <button onClick={() => handleOpenModal(suite)} className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-slate-600 hover:text-indigo-600 transition-colors">
-                                        <Edit2 size={14} />
-                                        Edit Details
-                                    </button>
-                                    <button onClick={() => handleDelete(suite.id)} className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                                        <Trash2 size={14} />
-                                        Delete
-                                    </button>
-                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
@@ -226,14 +243,29 @@ const AdminSuites = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase tracking-widest text-slate-400">Price Per Night (Paise)</label>
-                                        <input 
-                                            type="number" 
-                                            value={formData.price_per_night}
-                                            onChange={(e) => setFormData({...formData, price_per_night: parseInt(e.target.value)})}
-                                            className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
-                                        />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black uppercase tracking-widest text-slate-400">Price Per Night (Paise)</label>
+                                            <input 
+                                                type="number" 
+                                                value={formData.price_per_night}
+                                                onChange={(e) => setFormData({...formData, price_per_night: parseInt(e.target.value)})}
+                                                className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black uppercase tracking-widest text-slate-400">Display Icon</label>
+                                            <select 
+                                                value={formData.icon_name}
+                                                onChange={(e) => setFormData({...formData, icon_name: e.target.value})}
+                                                className="w-full px-5 py-3 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none transition-all font-bold text-slate-900"
+                                            >
+                                                <option value="Zap">Zap (AC Premium)</option>
+                                                <option value="Home">Home (Family Suites)</option>
+                                                <option value="ShieldCheck">Shield Check (Clean)</option>
+                                                <option value="Hotel">Hotel (Easy Booking)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

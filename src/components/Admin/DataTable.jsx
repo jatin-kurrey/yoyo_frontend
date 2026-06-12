@@ -24,7 +24,7 @@ export default function DataTable({ columns, rows, loading, emptyTitle }) {
         </thead>
         <tbody className="divide-y divide-slate-100">
           {rows.map((row) => (
-            <tr key={row.id || row.booking_id} className="transition hover:bg-slate-50/70">
+            <tr key={row.id || row.booking_id} className="transition hover:bg-slate-50/70 cursor-pointer">
               {columns.map((column) => (
                 <td key={column.key} className="px-5 py-4 text-sm font-semibold text-slate-700">
                   {column.render ? column.render(row) : row[column.key]}

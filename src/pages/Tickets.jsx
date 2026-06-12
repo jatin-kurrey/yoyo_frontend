@@ -3,8 +3,10 @@ import { Ticket, Check, ShoppingCart, X, CreditCard, User, Phone, CalendarDays }
 import { ticketService } from '../services/ticketService';
 import { bookingService } from '../services/bookingService';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function Tickets() {
+  usePageTitle("Book Tickets");
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
@@ -145,7 +147,7 @@ function Tickets() {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16 space-y-4">
                     <span className="inline-block px-4 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold tracking-widest uppercase">Tickets & Passes</span>
-                    <h1 className="text-5xl md:text-6xl font-black text-gray-900 tracking-tight">Unlock the <span className="text-blue-600 italic">Magic</span></h1>
+                    <h1 className="text-[2.5rem] md:text-6xl font-black text-gray-900 tracking-tight">Unlock the <span className="text-blue-600 italic">Magic</span></h1>
                     <p className="text-lg text-gray-500 max-w-2xl mx-auto">Skip the line and dive straight into the fun. Select your pass below and start your adventure today.</p>
                 </div>
 

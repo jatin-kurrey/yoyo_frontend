@@ -1,9 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@theme {
+  --font-heading: 'Baloo 2', cursive;
+  --font-body: 'Inter', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+
+  --radius-sm: 24px;
+  --radius-md: 32px;
+  --radius-lg: 40px;
+  --radius-xl: 48px;
+
+  --animate-fade-in: fadeIn 0.8s ease-in-out forwards;
+  --animate-fade-up: fadeUp 0.9s ease-out forwards;
+  --animate-pop-in: popIn 0.7s ease-out forwards;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-float-custom: float 6s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0%); }
+}
 
 @keyframes fadeSlide {
   from {
@@ -85,6 +121,8 @@
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   @apply text-slate-900 antialiased bg-gray-50;
+  overscroll-behavior: none;
+  scrollbar-gutter: stable;
 }
 
 .collage-img {
@@ -131,4 +169,49 @@ html.lenis, html.lenis body {
 
 .animate-infinite-scroll {
   animation: infinite-scroll 20s linear infinite;
+}
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Touch devices: always show card overlays */
+@media (hover: none) and (pointer: coarse) {
+  .card-overlay {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+}
+
+/* Reduced motion: pause all animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-infinite-scroll,
+  .footer-marquee,
+  .animate-shimmer,
+  .animate-float,
+  .animate-pulse,
+  .animate-ping {
+    animation: none !important;
+  }
+
+  html.lenis, html.lenis body {
+    scroll-behavior: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
 }

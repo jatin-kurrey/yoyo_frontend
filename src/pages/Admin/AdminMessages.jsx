@@ -58,7 +58,7 @@ export default function AdminMessages() {
       ),
     },
     { key: "subject", label: "Subject", render: (message) => message.subject || "Contact request" },
-    { key: "created_at", label: "Date", render: (message) => new Date(message.created_at).toLocaleString("en-IN") },
+    { key: "created_at", label: "Date", render: (message) => new Date(message.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) },
     { key: "status_badge", label: "Status", render: (message) => <StatusBadge value={message.status} /> },
     {
       key: "status",
@@ -77,10 +77,10 @@ export default function AdminMessages() {
       label: "Actions",
       render: (message) => (
         <div className="flex gap-2">
-          <button onClick={() => setSelected(message)} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600" title="View">
+          <button onClick={() => setSelected(message)} className="rounded-lg p-2.5 text-slate-500 hover:bg-blue-50 hover:text-blue-600" title="View message" aria-label={`View message from ${message.name}`}>
             <Eye size={17} />
           </button>
-          <button onClick={() => setDeleteTarget(message)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600" title="Delete">
+          <button onClick={() => setDeleteTarget(message)} className="rounded-lg p-2.5 text-slate-500 hover:bg-red-50 hover:text-red-600" title="Delete message" aria-label={`Delete message from ${message.name}`}>
             <Trash2 size={17} />
           </button>
         </div>

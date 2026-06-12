@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { Lock, Mail, ShieldCheck } from "lucide-react";
+import { Lock, Mail, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { usePageTitle } from "../../hooks/usePageTitle";
 
 export default function AdminLogin() {
+  usePageTitle("Admin Login");
   const { login, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
   if (!loading && isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -28,6 +31,18 @@ export default function AdminLogin() {
       setSubmitting(false);
     }
   };
+
+  const fillDemo = () => {
+    setForm({
+      email: import.meta.env.VITE_DEMO_ADMIN_EMAIL || "admin@yoyofun.local",
+      password: import.meta.env.VITE_DEMO_ADMIN_PASSWORD || "admin123",
+    });
+  };
+
+  const isDevelopment = import.meta.env.DEV;
+
+  const demoEmail = import.meta.env.VITE_DEMO_ADMIN_EMAIL || "admin@yoyofun.local";
+  const demoPassword = import.meta.env.VITE_DEMO_ADMIN_PASSWORD || "admin123";
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-10 text-white">
@@ -57,6 +72,7 @@ export default function AdminLogin() {
                     onChange={(event) => setForm({ ...form, email: event.target.value })}
                     className="w-full rounded-lg border border-slate-200 py-4 pl-12 pr-4 font-bold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     required
+                    autoComplete="email"
                   />
                 </div>
               </label>
@@ -70,6 +86,7 @@ export default function AdminLogin() {
                     onChange={(event) => setForm({ ...form, password: event.target.value })}
                     className="w-full rounded-lg border border-slate-200 py-4 pl-12 pr-4 font-bold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     required
+                    autoComplete="current-password"
                   />
                 </div>
               </label>
@@ -78,6 +95,46 @@ export default function AdminLogin() {
                 {submitting ? "Signing in..." : "Sign In"}
               </button>
             </form>
+
+            {/* Demo Credentials - Development Only */}
+            {isDevelopment && (
+              <div className="mt-6 border-t border-slate-200 pt-6">
+                <button
+                  onClick={() => setShowDemo(!showDemo)}
+                  className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors"
+                >
+                  {showDemo ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {showDemo ? "Hide" : "Show"} Demo Credentials
+                </button>
+
+                  {showDemo && (
+                    <div className="mt-4 space-y-3">
+                      <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
+                        <p className="text-xs font-black text-amber-600 uppercase tracking-widest mb-3">
+                          Development Only
+                        </p>
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase">Email</p>
+                            <p className="text-sm font-bold text-slate-900">{demoEmail}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase">Password</p>
+                            <p className="text-sm font-bold text-slate-900">{demoPassword}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={fillDemo}
+                          type="button"
+                          className="mt-3 w-full py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          Auto-Fill
+                        </button>
+                      </div>
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
         </div>
       </div>
