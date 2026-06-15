@@ -40,7 +40,7 @@ export default function Navbar() {
     if (!settings?.address) return "Durg, Chhattisgarh";
     const parts = settings.address.split(",");
     if (parts.length < 2) return settings.address;
-    const city = parts[parts.length - 2]?.trim();
+    const city = parts[parts.length - 2]?.trim().replace(/^(District|Tehsil)\s+/i, "");
     const stateWithPin = parts[parts.length - 1]?.trim();
     const state = stateWithPin?.replace(/\d/g, "").trim();
     return city && state ? `${city}, ${state}` : settings.address;

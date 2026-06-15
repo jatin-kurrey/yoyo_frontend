@@ -75,11 +75,11 @@ export default function Hero() {
   }, []);
 
   const getLocationCityAndSub = () => {
-    if (!settings?.address) return { city: "Indore", sub: "Bypass" };
+    if (!settings?.address) return { city: "Durg", sub: "Chhattisgarh" };
     const parts = settings.address.split(",");
-    if (parts.length < 2) return { city: parts[0]?.trim() || "Indore", sub: "" };
-    const city = parts[parts.length - 2]?.trim() || "Indore";
-    const sub = parts[parts.length - 3]?.trim() || "Bypass";
+    if (parts.length < 2) return { city: parts[0]?.trim().replace(/^(District|Tehsil)\s+/i, "") || "Durg", sub: "" };
+    const city = parts[parts.length - 2]?.trim().replace(/^(District|Tehsil)\s+/i, "") || "Durg";
+    const sub = parts[parts.length - 3]?.trim().replace(/^(District|Tehsil)\s+/i, "") || "Chhattisgarh";
     return { city, sub };
   };
 
@@ -171,7 +171,7 @@ export default function Hero() {
               </div>
             </div>
 
-            <h1 className="[font-family:'Outfit',sans-serif] font-black tracking-tighter leading-[1] text-[2rem] md:text-7xl lg:text-8xl mb-8 drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <h1 className="[font-family:'Outfit',sans-serif] font-black tracking-tighter leading-[1] text-[2rem] md:text-7xl lg:text-8xl mb-8 drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 line-clamp-2">
               {slides[index].headline.split(' ').map((word, i) => {
                 const isThrilling = word.toLowerCase().includes('thrilling');
                 const isWaterpark = word.toLowerCase().includes('waterpark');
@@ -186,7 +186,7 @@ export default function Hero() {
               })}
             </h1>
 
-            <p className="mx-auto mb-10 max-w-2xl text-sm md:text-xl lg:text-2xl text-white/90 font-medium leading-relaxed opacity-90 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500 px-4">
+            <p className="mx-auto mb-10 max-w-2xl text-sm md:text-xl lg:text-2xl text-white/90 font-medium leading-relaxed opacity-90 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500 px-4 line-clamp-2">
               {slides[index].subheadline}
             </p>
 

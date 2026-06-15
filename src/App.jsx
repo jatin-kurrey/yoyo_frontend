@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from "react"
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from "react-router-dom"
-import Lenis from "@studio-freight/lenis"
+import Lenis from "lenis"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import LoadingSpinner from "./components/common/LoadingSpinner"

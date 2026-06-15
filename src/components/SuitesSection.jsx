@@ -128,8 +128,8 @@ export default function SuitesSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-16">
           <div className="order-2 lg:order-1 relative">
             <div className="grid grid-cols-2 gap-4">
-              <img src="https://images.unsplash.com/photo-1590490359683-658d3d23f972?q=80&w=800&auto=format&fit=crop" className="rounded-[40px] shadow-2xl h-64 object-cover mt-8" alt="Stay 1" />
-              <img src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?q=80&w=800&auto=format&fit=crop" className="rounded-[40px] shadow-2xl h-64 object-cover" alt="Stay 2" />
+              <img src="https://images.unsplash.com/photo-1590490359683-658d3d23f972?q=80&w=800&auto=format&fit=crop" className="rounded-[40px] shadow-2xl h-64 object-cover mt-8" alt="Stay 1" loading="lazy" />
+              <img src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?q=80&w=800&auto=format&fit=crop" className="rounded-[40px] shadow-2xl h-64 object-cover" alt="Stay 2" loading="lazy" />
             </div>
             <div className="absolute -bottom-6 -right-6 bg-blue-600 text-white p-10 rounded-[40px] shadow-2xl hidden md:block">
                <p className="text-3xl font-black mb-1 italic">Best Value</p>

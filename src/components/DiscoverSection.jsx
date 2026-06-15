@@ -100,6 +100,7 @@ export default function DiscoverSection() {
                   src={item.image_url}
                   alt={item.title}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover/card:scale-110"
+                  loading="lazy"
                 />
                 <div className="card-overlay absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                 
@@ -148,6 +149,7 @@ export default function DiscoverSection() {
                   src={item.image_url}
                   alt={item.title}
                   className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="card-overlay absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                 

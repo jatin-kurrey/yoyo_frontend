@@ -82,20 +82,20 @@ export default function TrustSection() {
                   alt="Family enjoying waterpark fun at YOYO"
                   loading="lazy" width={800} height={256}
                 />
-               <div className="bg-blue-600 p-8 rounded-[32px] text-white">
-                 <h4 className="text-4xl font-black mb-2">1000+</h4>
-                 <p className="text-sm font-bold opacity-80 uppercase tracking-widest">Happy Visitors Weekly</p>
+               <div className="bg-blue-600 p-4 sm:p-8 rounded-[32px] text-white">
+                 <h4 className="text-2xl sm:text-4xl font-black mb-2">1000+</h4>
+                 <p className="text-[10px] sm:text-sm font-bold opacity-80 uppercase tracking-widest">Happy Visitors Weekly</p>
                </div>
              </div>
              <div className="pt-12 space-y-4">
-               <div className="bg-white p-8 rounded-[32px] border border-gray-200 shadow-xl">
+               <div className="bg-white p-4 sm:p-8 rounded-[32px] border border-gray-200 shadow-xl">
                  <div className="flex gap-1 text-yellow-400 mb-4">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
                  </div>
-                 <p className="text-gray-600 font-medium italic mb-4 leading-relaxed">
+                 <p className="text-gray-600 font-medium italic mb-4 leading-relaxed text-xs sm:text-sm">
                    "Best weekend trip from {getCity()}. The kids zone is actually safe and very clean!"
                  </p>
-                 <p className="text-gray-900 font-black text-xs uppercase tracking-widest">— Sharma Family</p>
+                 <p className="text-gray-900 font-black text-[10px] sm:text-xs uppercase tracking-widest">— Sharma Family</p>
                </div>
                 <img 
                   src="https://images.unsplash.com/photo-1564248516232-ea0616eff02e?w=800&auto=format&fit=crop" 
