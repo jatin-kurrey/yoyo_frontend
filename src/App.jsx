@@ -102,12 +102,16 @@ function AppShell() {
 function App() {
 
   useEffect(() => {
+    // Disable Lenis on mobile/tablet devices completely to avoid any touch event interception issues
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 1024;
+    if (isMobile) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       gestureOrientation: "vertical",
       smoothWheel: true,
-      smoothTouch: false, // Disable smoothTouch to allow normal 1-finger scroll on mobile
+      smoothTouch: false,
       touchMultiplier: 1.5
     })
 
