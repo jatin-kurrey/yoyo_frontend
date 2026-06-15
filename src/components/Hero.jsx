@@ -156,7 +156,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative overflow-visible min-h-screen lg:h-screen">
+    <section className="relative overflow-visible h-screen">
       {/* HERO MAIN */}
       <div className="relative h-full w-full overflow-hidden bg-slate-950">
         {slides.map((slide, i) => {
@@ -179,7 +179,7 @@ export default function Hero() {
         })}
 
         {/* Content */}
-        <div className="relative z-10 flex h-full items-center justify-center pt-32 pb-48">
+        <div className="relative z-10 flex h-full items-center justify-center pt-24 pb-36 md:pt-32 md:pb-48">
           <div className="mx-auto max-w-6xl px-6 text-center text-white">
             {/* ... (badges, h1, p, links remain same) ... */}
             {/* Status & Trust Badge Row */}
