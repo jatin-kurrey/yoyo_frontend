@@ -107,7 +107,7 @@ function App() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       gestureOrientation: "vertical",
       smoothWheel: true,
-      smoothTouch: true, // Enable smooth touch scrolling
+      smoothTouch: false, // Disable smoothTouch to allow normal 1-finger scroll on mobile
       touchMultiplier: 1.5
     })
 
