@@ -44,11 +44,15 @@ export default function DiscoverSection() {
     const interval = setInterval(() => {
       idx = (idx + 1) % attractionList.length;
       const cards = container.children;
-      if (cards[idx]) {
-        cards[idx].scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center"
+      const targetCard = cards[idx];
+      if (targetCard) {
+        const containerWidth = container.clientWidth;
+        const cardWidth = targetCard.clientWidth;
+        const cardLeft = targetCard.offsetLeft;
+        // Scroll only the horizontal container, preventing window scroll hijacking
+        container.scrollTo({
+          left: cardLeft - (containerWidth / 2) + (cardWidth / 2),
+          behavior: "smooth"
         });
       }
     }, 4000);

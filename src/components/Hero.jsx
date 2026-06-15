@@ -256,7 +256,7 @@ export default function Hero() {
         </div>
 
         {/* Mobile Smooth Auto-Play Carousel Layout */}
-        <div className="md:hidden w-[90%] mx-auto overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.4)] relative">
+        <div className="md:hidden w-full overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 backdrop-blur-3xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.4)] relative">
           <div className="relative h-[85px] w-full flex items-center justify-center overflow-hidden py-4 px-6">
             {quickInfo.map((item, idx) => (
               <div

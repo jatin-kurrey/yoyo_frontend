@@ -122,7 +122,7 @@ function Contact() {
 
                     {/* FORM SIDE */}
                     <div className="lg:col-span-7">
-                        <div className="bg-white p-10 md:p-14 rounded-[48px] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+                        <div className="bg-white p-6 sm:p-10 md:p-14 rounded-[48px] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-3">
