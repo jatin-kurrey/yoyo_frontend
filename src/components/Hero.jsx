@@ -32,6 +32,25 @@ export default function Hero() {
   const [lowestPrice, setLowestPrice] = useState("₹499");
 
   useEffect(() => {
+    // Load cached slides, settings, and price immediately to render the above-the-fold content instantly
+    const cachedSlides = localStorage.getItem("cache_hero_slides");
+    if (cachedSlides) {
+      try {
+        setSlides(JSON.parse(cachedSlides));
+        setLoading(false);
+      } catch (e) {}
+    }
+    const cachedSettings = localStorage.getItem("cache_public_settings");
+    if (cachedSettings) {
+      try {
+        setSettings(JSON.parse(cachedSettings));
+      } catch (e) {}
+    }
+    const cachedPrice = localStorage.getItem("cache_lowest_price");
+    if (cachedPrice) {
+      setLowestPrice(cachedPrice);
+    }
+
     async function fetchSlides() {
       try {
         const data = await heroService.list();
@@ -43,6 +62,7 @@ export default function Hero() {
             cta_text: slide.cta_label || slide.cta_text,
           }));
           setSlides(mapped);
+          localStorage.setItem("cache_hero_slides", JSON.stringify(mapped));
         }
       } catch (error) {
         console.error("Failed to load hero slides:", error);
@@ -54,6 +74,7 @@ export default function Hero() {
       try {
         const data = await settingsService.public();
         setSettings(data);
+        localStorage.setItem("cache_public_settings", JSON.stringify(data));
       } catch (error) {
         console.error("Failed to load settings in Hero:", error);
       }
@@ -63,7 +84,9 @@ export default function Hero() {
         const data = await ticketService.list();
         if (data && data.length > 0) {
           const minPrice = Math.min(...data.map(t => t.price));
-          setLowestPrice(`₹${minPrice}`);
+          const priceStr = `₹${minPrice}`;
+          setLowestPrice(priceStr);
+          localStorage.setItem("cache_lowest_price", priceStr);
         }
       } catch (error) {
         console.error("Failed to load tickets in Hero:", error);

@@ -15,11 +15,21 @@ export default function Navbar() {
 
   useEffect(() => {
     let active = true;
+    
+    // Load cached settings immediately for instant rendering
+    const cachedSettings = localStorage.getItem("cache_public_settings");
+    if (cachedSettings) {
+      try {
+        setSettings(JSON.parse(cachedSettings));
+      } catch (e) {}
+    }
+
     async function loadSettings() {
       try {
         const data = await settingsService.public();
         if (active) {
           setSettings(data);
+          localStorage.setItem("cache_public_settings", JSON.stringify(data));
         }
       } catch (err) {
         console.error("Failed to load public settings in Navbar:", err);

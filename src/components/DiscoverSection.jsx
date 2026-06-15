@@ -21,10 +21,21 @@ export default function DiscoverSection() {
 
   useEffect(() => {
     let active = true;
+
+    // Load cached attractions immediately to avoid blank loaders
+    const cachedAttractions = localStorage.getItem("cache_attractions");
+    if (cachedAttractions) {
+      try {
+        setAttractionList(JSON.parse(cachedAttractions));
+        setLoading(false);
+      } catch (e) {}
+    }
+
     attractionService.listPublic()
       .then(data => {
         if (active) {
           setAttractionList(data || []);
+          localStorage.setItem("cache_attractions", JSON.stringify(data || []));
           setLoading(false);
         }
       })
