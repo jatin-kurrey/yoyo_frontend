@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=https://api.yoyofun.in
+        - VITE_RAZORPAY_KEY_ID=rzp_live_your_key_id # Put your live Razorpay Key
+    container_name: yoyofun-frontend
+    restart: always
+    ports:
+      - "9006:80" # Exposed to host for proxying
