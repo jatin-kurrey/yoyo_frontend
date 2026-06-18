@@ -59,7 +59,10 @@ export default function AdminSidebar() {
   });
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 text-white lg:block overflow-y-auto">
+    <aside 
+      className="fixed top-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 text-white lg:block"
+      style={{ height: "100vh", overflowY: "auto" }}
+    >
       <div className="mb-8 px-3">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-600">
