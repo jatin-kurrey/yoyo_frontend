@@ -59,41 +59,47 @@ export default function AdminSidebar() {
   });
 
   return (
-    <aside 
-      className="fixed top-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 text-white lg:block"
-      style={{ height: "100vh", overflowY: "auto" }}
-    >
-      <div className="mb-8 px-3">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 text-white lg:flex lg:flex-col">
+      {/* Pinned Header */}
+      <div className="h-20 px-6 flex items-center border-b border-slate-850 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-600">
-            <BarChart3 size={22} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
+            <BarChart3 size={20} />
           </div>
           <div>
-            <p className="text-lg font-black tracking-tight">YOYO Admin</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-blue-300">Booking Ops</p>
+            <p className="text-md font-black tracking-tight">YOYO Admin</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-blue-300">Booking Ops</p>
           </div>
         </div>
       </div>
-      <nav className="space-y-2 mb-8">
+
+      {/* Scrollable Navigation Links */}
+      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1.5 scrollbar-thin">
         {visibleItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-black transition ${
+              `flex items-center gap-3 rounded-lg px-4 py-2.5 text-xs font-bold transition ${
                 isActive ? "bg-blue-600 text-white shadow-lg shadow-blue-950/30" : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`
             }
           >
-            <item.icon size={19} />
+            <item.icon size={16} />
             {item.label}
           </NavLink>
         ))}
       </nav>
-      <div className="rounded-lg border border-white/10 bg-white/5 p-4 mb-12">
-        <BookOpen className="mb-3 text-blue-300" size={20} />
-        <p className="text-sm font-black">YOYO FUN N FOODS</p>
-        <p className="mt-1 text-xs font-semibold leading-5 text-slate-400">Secure booking, inventory, messages, and revenue operations.</p>
+
+      {/* Pinned Footer Card */}
+      <div className="p-4 border-t border-slate-850 bg-slate-900/30 flex-shrink-0">
+        <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+          <BookOpen className="mb-2 text-blue-300" size={18} />
+          <p className="text-xs font-black text-slate-200">YOYO FUN N FOODS</p>
+          <p className="mt-1 text-[10px] font-semibold leading-4 text-slate-400">
+            Secure booking, inventory, and revenue operations.
+          </p>
+        </div>
       </div>
     </aside>
   );
