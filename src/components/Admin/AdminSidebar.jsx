@@ -59,8 +59,8 @@ export default function AdminSidebar() {
   });
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 text-white lg:flex lg:flex-col">
-      <div className="mb-6 px-3 flex-shrink-0">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-800 bg-slate-950 px-4 py-6 text-white lg:block overflow-y-auto">
+      <div className="mb-8 px-3">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-600">
             <BarChart3 size={22} />
@@ -71,7 +71,7 @@ export default function AdminSidebar() {
           </div>
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto space-y-2 pr-1 mb-6 scrollbar-thin">
+      <nav className="space-y-2 mb-8">
         {visibleItems.map((item) => (
           <NavLink
             key={item.path}
@@ -87,7 +87,7 @@ export default function AdminSidebar() {
           </NavLink>
         ))}
       </nav>
-      <div className="rounded-lg border border-white/10 bg-white/5 p-4 flex-shrink-0">
+      <div className="rounded-lg border border-white/10 bg-white/5 p-4">
         <BookOpen className="mb-3 text-blue-300" size={20} />
         <p className="text-sm font-black">YOYO FUN N FOODS</p>
         <p className="mt-1 text-xs font-semibold leading-5 text-slate-400">Secure booking, inventory, messages, and revenue operations.</p>
