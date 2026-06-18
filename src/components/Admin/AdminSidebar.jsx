@@ -90,7 +90,7 @@ export default function AdminSidebar() {
           </NavLink>
         ))}
       </nav>
-      <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+      <div className="rounded-lg border border-white/10 bg-white/5 p-4 mb-12">
         <BookOpen className="mb-3 text-blue-300" size={20} />
         <p className="text-sm font-black">YOYO FUN N FOODS</p>
         <p className="mt-1 text-xs font-semibold leading-5 text-slate-400">Secure booking, inventory, messages, and revenue operations.</p>
