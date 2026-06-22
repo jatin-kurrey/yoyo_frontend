@@ -9,7 +9,7 @@ import { ticketService } from "../services/ticketService";
 const FALLBACK_SLIDES = [
   {
     image_url: "https://images.unsplash.com/photo-1708157730402-67cc5b19e335?q=80&w=1600&auto=format&fit=crop",
-    headline: "Best Water Park in Indore for Family Fun & Kids Safety",
+    headline: "Best Water Park in Bhilai Durg for Family Fun & Kids Safety",
     subheadline: "Slides, wave pools, kids zone & full-day fun — starting at ₹499",
     cta_url: "/tickets",
     cta_text: "Book Tickets Now"

@@ -29,10 +29,10 @@ export default function TrustSection() {
   }, []);
 
   const getCity = () => {
-    if (!settings?.address) return "Indore";
+    if (!settings?.address) return "Bhilai Durg";
     const parts = settings.address.split(",");
     if (parts.length < 2) return settings.address;
-    return parts[parts.length - 2]?.trim() || "Indore";
+    return parts[parts.length - 2]?.trim() || "Bhilai Durg";
   };
 
   useEffect(() => {
